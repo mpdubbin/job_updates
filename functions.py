@@ -38,3 +38,10 @@ def get_job_listings(url: str) -> List[str]:
         driver.quit()
 
     return job_list
+
+
+def save_jobs(jobs: List[str], filename: str) -> None:
+    """Save job listings to a file."""
+    with open(filename, "w") as file:
+        for job in jobs:
+            file.write(job + "\n")
