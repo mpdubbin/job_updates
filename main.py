@@ -15,7 +15,7 @@ url = os.getenv("URL")
 check_for_updates()
 
 # Schedule check_for_updates() to run every 10 minutes
-schedule.every(10).minutes.do(check_for_updates)
+schedule.every(5).minutes.do(check_for_updates)
 
 if __name__ == "__main__":
     while True:

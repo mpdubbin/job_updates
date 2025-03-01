@@ -1,5 +1,14 @@
 # job_updates  
 
+How to use:  
+---
+1. Configure Gmail account according to the directions in Appendix A
+2. pip install requirements.txt
+3. Create a .env file with:  
+- URL = the url of the website (I will not share the company in the interest of privacy)
+- MY_EMAIL = your email account
+
+## Project Walkthrough:  
 A recruiter reached out to me to apply to a job going live on X date, but without specifying a time.  
 
 Instead of waiting around and actively refreshing the webpage throughout the day, I decided to write a script to notify me when the company's job page updates.
@@ -147,6 +156,15 @@ First internet search: Python's [email](https://docs.python.org/3/library/email.
 
 `smptlib` requires access to the Gmail account. [Google updated their security features in early 2025](https://support.google.com/accounts/answer/6010255?hl=en&sjid=6406649094115164508-NA) which adds additional steps to acquire access through Python. 
 
+...
+
+I spent some time trying to figure out how to configure Google for Python access, but because Google changed the rules in early 2025 and it was difficult to find a clear path, I input webpages into ChatGPT and followed the steps it returned (see Appendix A below).
+
+And success! Required some configuration to test the code and factor it into the functions.py file. Time to run the script and await the update.
+
+<br>
+<br>
+<br>
 
 
 
@@ -154,10 +172,8 @@ First internet search: Python's [email](https://docs.python.org/3/library/email.
 
 
 ---
----
----
 
-# **Setting Up Gmail API Authentication with OAuth2 (Python)**  
+# **Appendix A: Setting Up Gmail API Authentication with OAuth2 (Python)**  
 
 ## **Step 1: Enable Gmail API in Google Cloud Console**  
 1. Go to **[Google Cloud Console](https://console.cloud.google.com/)**.  

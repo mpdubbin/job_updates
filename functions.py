@@ -1,10 +1,16 @@
+import base64
 import glob
 import os
 import time
 from datetime import datetime
 from typing import List
-
+# Dotenv imports
 from dotenv import load_dotenv
+# Google email imports
+from googleapiclient.discovery import build
+from email.mime.text import MIMEText
+from gmail_auth import authenticate_gmail 
+# Selenium imports
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -16,19 +22,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # Environment variables
 load_dotenv()
-url = os.getenv("URL", "")
+url = os.getenv("URL")
+my_email = os.getenv("MY_EMAIL")
 
 # Directory to store job list files
 JOB_LISTS_DIR = "job_lists"
 
-# Ensure the job_lists directory exists
-os.makedirs(JOB_LISTS_DIR, exist_ok=True)
-
-
-def get_latest_job_file() -> str:
-    """Find the most recent job listing file in the job_lists directory."""
-    files = sorted(glob.glob(f"{JOB_LISTS_DIR}/list_*.txt"), reverse=True)
-    return files[0] if files else None
 
 
 def get_job_listings(url: str) -> List[str]:
@@ -63,6 +62,12 @@ def get_job_listings(url: str) -> List[str]:
     return job_list
 
 
+def get_latest_job_file() -> str:
+    """Find the most recent job listing file in the job_lists directory."""
+    files = sorted(glob.glob(f"{JOB_LISTS_DIR}/list_*.txt"), reverse=True)
+    return files[0] if files else None
+
+
 def load_previous_jobs() -> List[str]:
     """Load job listings from the most recent file in the job_lists directory."""
     latest_file = get_latest_job_file()
@@ -85,10 +90,33 @@ def save_jobs(jobs: List[str], filename: str) -> None:
             file.write(job + "\n")
                 
 
+def send_email(to: str, subject: str, body: str):
+    """Send an email using Gmail API."""
+    creds = authenticate_gmail()
+    service = build("gmail", "v1", credentials=creds)
+
+    # Create the email
+    message = MIMEText(body)
+    message["to"] = to
+    message["subject"] = subject
+
+    # Encode message
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    body = {"raw": raw_message}
+
+    try:
+        sent_message = service.users().messages().send(userId="me", body=body).execute()
+        print(f"Email sent! Message ID: {sent_message['id']}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+
 def notify(new_jobs: List[str]) -> None:
-    """Send a notification (console log for now, but can be email/Discord)."""
-    print(f"New jobs detected: {new_jobs}")
-    # TODO: Integrate email or text alerts.
+    """Send an email notification about new job postings."""
+    subject = "JOB IS UP!"
+    body = f"The following new jobs have been posted:\n\n" + "\n".join(new_jobs)
+    send_email(my_email, subject, body)
+    print("Notification email sent.")
 
 
 def check_for_updates():
