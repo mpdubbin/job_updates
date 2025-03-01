@@ -74,12 +74,11 @@ def load_previous_jobs() -> List[str]:
         return [line.strip() for line in file.readlines()]
 
 
-
 def save_jobs(jobs: List[str], filename: str) -> None:
     """Save job listings to a file inside the job_lists/ directory."""
     os.makedirs(JOB_LISTS_DIR, exist_ok=True)  # Ensure the directory exists
 
-    filepath = os.path.join(JOB_LISTS_DIR, os.path.basename(filename))  # Force saving inside job_lists/
+    filepath = os.path.join(JOB_LISTS_DIR, os.path.basename(filename)) 
 
     with open(filepath, "w") as file:
         for job in jobs:

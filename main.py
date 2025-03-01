@@ -11,6 +11,9 @@ from functions import *
 load_dotenv()
 url = os.getenv("URL")
 
+# Run function immediately to pull job list
+check_for_updates()
+
 # Schedule check_for_updates() to run every 10 minutes
 schedule.every(10).minutes.do(check_for_updates)
 
