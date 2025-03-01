@@ -137,5 +137,192 @@ Up next is to glue it all together: pull data, save data -> pull data, read data
 
 I have done [CRUD](https://database.guide/what-is-crud/) work like this before, and this is a simple example, which behaves as expected. What I haven't done before is...
 
+### Notification via email
+At this point, the script runs in the terminal and updates in the terminal:
+![terminal](assets/img/terminal.png)
+
+If I'm away from my computer I'd like to receive an email notification so I know it's time to log on and apply!
+
+First internet search: Python's [email](https://docs.python.org/3/library/email.html#module-email) package. First line of the webpage: "specifically *not* designed to send emails." Ok... on to the next. '[smptlib]'(https://docs.python.org/3/library/smtplib.html#module-smtplib) is referred to on the email page.
+
+`smptlib` requires access to the Gmail account. [Google updated their security features in early 2025](https://support.google.com/accounts/answer/6010255?hl=en&sjid=6406649094115164508-NA) which adds additional steps to acquire access through Python. 
 
 
+
+
+
+
+
+---
+---
+---
+
+# **Setting Up Gmail API Authentication with OAuth2 (Python)**  
+
+## **Step 1: Enable Gmail API in Google Cloud Console**  
+1. Go to **[Google Cloud Console](https://console.cloud.google.com/)**.  
+2. **Create a New Project**:  
+   - Click **"Select a project" → "New Project."**  
+   - Name it `"Gmail API Project"` and create it.  
+3. **Enable Gmail API**:  
+   - Go to **"APIs & Services" → "Library."**  
+   - Search for **"Gmail API"** and click **"Enable."**  
+4. **Create OAuth 2.0 Credentials**:  
+   - Go to **"APIs & Services" → "Credentials."**  
+   - Click **"Create Credentials" → "OAuth client ID."**  
+   - **Select "User Data"** and click **Next**.  
+5. **Configure OAuth Consent Screen**:  
+   - **App Name:** `"Gmail API App"`  
+   - **User support email:** Your email  
+   - **Developer contact email:** Your email  
+   - Click **"Save & Continue."**  
+6. **Add Scopes**:  
+   - Click **"Add or Remove Scopes"**.  
+   - Search for **Gmail API** and select:  
+     ```
+     https://www.googleapis.com/auth/gmail.send
+     ```
+   - Click **"Update" → "Save and Continue."**  
+7. **Add Test Users (If in Testing Mode)**:  
+   - Go to **"OAuth Consent Screen" → "Test Users."**  
+   - Click **"Add Users"** and enter **your Gmail address**.  
+   - Click **Save & Continue**.  
+8. **Create OAuth Client ID**:  
+   - Go to **"APIs & Services" → "Credentials."**  
+   - Click **"Create Credentials" → "OAuth client ID."**  
+   - Select **"Desktop App"**.  
+   - Name it (e.g., `"Gmail Desktop Client"`).  
+   - Click **"Create."**  
+9. **Download `client_secret.json`**:  
+   - Click **Download JSON** (rename it to `credentials.json`).  
+   - Save it in your project directory.  
+
+---
+
+## **Step 2: Install Required Python Libraries**  
+Run the following command in your terminal:  
+
+```bash
+pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+```
+
+---
+
+## **Step 3: Authenticate Gmail API**  
+### **Create `gmail_auth.py`**  
+
+```python
+import os
+import pickle
+import google.auth
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
+
+def authenticate_gmail():
+    """Authenticate and return Gmail API service."""
+    creds = None
+    print("Checking for existing credentials...")
+
+    # Check if token exists
+    if os.path.exists("token.pickle"):
+        print("Found token.pickle. Loading credentials...")
+        with open("token.pickle", "rb") as token:
+            creds = pickle.load(token)
+
+    # If no valid credentials, authenticate
+    if not creds or not creds.valid:
+        print("No valid credentials found. Authenticating...")
+        if creds and creds.expired and creds.refresh_token:
+            print("Refreshing credentials...")
+            creds.refresh(Request())
+        else:
+            print("Opening browser for authentication...")
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "credentials.json", SCOPES
+            )
+            creds = flow.run_local_server(port=0)
+
+        # Save credentials for future use
+        with open("token.pickle", "wb") as token:
+            pickle.dump(creds, token)
+        print("Credentials saved.")
+
+    return creds
+
+if __name__ == "__main__":
+    authenticate_gmail()
+    print("Authentication complete!")
+```
+
+---
+
+## **Step 4: Run Authentication**
+Run the following command:
+
+```bash
+python gmail_auth.py
+```
+
+### **Expected Behavior**:
+- A **browser window should open** asking for **permissions**.  
+- Click **"Allow"** to grant access.  
+- If you see **"Google Hasn’t Verified This App"**, click:
+  - **"Advanced" → "Go to Gmail API App (unsafe)" → "Allow."**  
+- A `token.pickle` file will be created to store credentials.
+
+If nothing happens, **delete the old token and retry**:
+
+```bash
+rm token.pickle
+python gmail_auth.py
+```
+
+---
+
+## **Step 5: Send an Email**
+### **Create `send_email.py`**
+```python
+import base64
+from googleapiclient.discovery import build
+from email.mime.text import MIMEText
+from gmail_auth import authenticate_gmail  # Import authentication function
+
+def send_email(to, subject, body):
+    """Send an email using Gmail API."""
+    creds = authenticate_gmail()
+    service = build("gmail", "v1", credentials=creds)
+
+    # Create the email
+    message = MIMEText(body)
+    message["to"] = to
+    message["subject"] = subject
+
+    # Encode message
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    body = {"raw": raw_message}
+
+    try:
+        sent_message = service.users().messages().send(userId="me", body=body).execute()
+        print(f"Email sent! Message ID: {sent_message['id']}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+# Example usage
+send_email("recipient@example.com", "Hello from Python!", "This is a test email sent via Gmail API with OAuth2.")
+```
+
+---
+
+## **Step 6: Run the Email Script**
+```bash
+python send_email.py
+```
+
+### **Expected Output**:
+```
+Email sent! Message ID: 17f2d9d6ac21a
+```
+
+---
