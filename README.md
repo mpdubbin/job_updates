@@ -72,7 +72,7 @@ For either case, the workflow I devised is as follows:
   b. Store the job titles as a list called `initial_list.txt`.  
 
 2. Second Job Pull (scheduled execution) (checker_job_pull.py)  
-  a. Run the script at a scheduled interval (every 10 minutes? As to not overwhelm the small company system?)  
+  a. Run the script at a scheduled interval (every 10 minutes? As to not overwhelm the small company system?) (Side note: I was thinking of doing a full CRON job, but not necessary for this little project.) 
   b. Scrape the latest job listings.  
  
 3. Compare Old and New Job Lists  
@@ -137,9 +137,5 @@ Up next is to glue it all together: pull data, save data -> pull data, read data
 
 I have done [CRUD](https://database.guide/what-is-crud/) work like this before, and this is a simple example, which behaves as expected. What I haven't done before is...
 
-### Notification via email
-At this point, the script runs in the terminal and updates in the terminal:
-![terminal](assets/img/terminal.png)
 
-If I'm away from my computer, I'd like to receive an email notification, so I know it's time to log on and apply!
 
