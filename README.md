@@ -9,7 +9,7 @@ How to use:
 - MY_EMAIL = your email account
 4. Change the class name of the div, depending on the website page that you're interested in
 
-## Project Walkthrough:  
+## Project Background & Walkthrough:  
 A recruiter reached out to me to apply to a job going live on X date, but without specifying a time.  
 
 Instead of waiting around and actively refreshing the webpage throughout the day, I decided to write a script to notify me when the company's job page updates.
