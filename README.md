@@ -7,6 +7,7 @@ How to use:
 3. Create a .env file with:  
 - URL = the url of the website (I will not share the company in the interest of privacy)
 - MY_EMAIL = your email account
+4. Change the class name of the div, depending on the website page that you're interested in
 
 ## Project Walkthrough:  
 A recruiter reached out to me to apply to a job going live on X date, but without specifying a time.  
