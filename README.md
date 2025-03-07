@@ -9,10 +9,17 @@ How to use:
 - MY_EMAIL = your email account
 4. Change the class name of the div, depending on the website page that you're interested in
 
-## Project Background & Walkthrough:  
+## Project Background 
 A recruiter reached out to me to apply to a job going live on X date, but without specifying a time.  
 
 Instead of waiting around and actively refreshing the webpage throughout the day, I decided to write a script to notify me when the company's job page updates.
+
+## Future Functionality
+1. Currently, the project pulls the job listings from a singular webpage, bespoke to a singular company's webpage structure - a future version can extend to multiple webpages (pagination) and mulitple companies (dynamic HTML attribute).
+2. Currently, the project pulls _all_ job titles - a future version can pull specific, or semantically similiar, job titles.
+3. Add a GUI so the user can copy/paste and/or drag/drop links, and input job titles of their interest.
+
+## Flow-of-Though Walkthrough:  
 
 ### First thoughts 
 1. Use [BeautifulSoup4](https://beautiful-soup-4.readthedocs.io/en/latest/) to pull the HTML and appropriate job postings attributes
