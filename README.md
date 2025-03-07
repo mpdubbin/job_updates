@@ -19,7 +19,7 @@ Instead of waiting around and actively refreshing the webpage throughout the day
 2. Currently, the project pulls _all_ job titles - a future version can pull specific, or semantically similiar, job titles.
 3. Add a GUI so the user can copy/paste and/or drag/drop links, and input job titles of their interest.
 
-## Flow-of-Though Walkthrough:  
+## Flow-of-Thought Walkthrough:  
 
 ### First thoughts 
 1. Use [BeautifulSoup4](https://beautiful-soup-4.readthedocs.io/en/latest/) to pull the HTML and appropriate job postings attributes
